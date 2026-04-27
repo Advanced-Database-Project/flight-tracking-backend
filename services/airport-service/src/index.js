@@ -1,6 +1,6 @@
-
-import env from "../../../shared/env.js";
 import express from "express";
+import cors from "cors";
+import env from "../../../shared/env.js";
 import connectMongoDB from "../../../shared/db.js";
 import airportRouter from "./routes/airportRoutes.js";
 
@@ -8,6 +8,7 @@ const app = express();
 
 // middleware
 app.use(express.json());
+app.use(cors());
 
 // DB connection
 connectMongoDB();
