@@ -13,5 +13,5 @@ rename example.env to .env and add your credential there
 # development
 $ npm run start:user-service   (run this command in root folder to run user service)
 $ npm run start:airport-service   (run this command in root folder to run airport service)
-
+$ npm run start:flight-service (run this command in root folder to run flight service)
 ```
