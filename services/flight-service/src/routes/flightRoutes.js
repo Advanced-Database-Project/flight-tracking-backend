@@ -5,6 +5,6 @@ const flightRouter = express.Router();
 
 flightRouter.post("/fetch", fetchAndStoreFlights);  
 flightRouter.get("/", getFlights);                 
-flightRouter.get("/:id", getFlightById);            
+flightRouter.get("/search", getFlightById);            
 
 export default flightRouter;
