@@ -11,7 +11,9 @@
   ],
   "scripts": {
     "start:user-service": "npm run dev -w user-service",
-    "start:airport-service": "npm run dev -w airport-service"
+    "start:airport-service": "npm run dev -w airport-service",
+    "start:flight-service": "npm run dev -w flight-service"
+
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
