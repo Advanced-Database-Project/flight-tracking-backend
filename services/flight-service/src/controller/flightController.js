@@ -32,8 +32,7 @@ export const fetchAndStoreFlights = async (req, res) => {
 // Read all stored flights
 export const getFlights = async (req, res) => {
   try {
-
-    const flights = await Flight.find(filter);
+    const flights = await Flight.find(req.query);
     res.json(flights);
   } catch (err) {
     res.status(500).json({ error: err.message });
