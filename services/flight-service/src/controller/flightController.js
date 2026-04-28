@@ -42,7 +42,7 @@ export const getFlights = async (req, res) => {
   }
 };
 
-// Read one stored flight by Mongo_id
+// Read one stored flight by _id
   export const getFlightById = async (req, res) => {
   try {
     const { iata, date } = req.query;
