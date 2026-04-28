@@ -1,5 +1,4 @@
-
-import Airport from '../models/airport.js'
+import Airport from "../models/airport.js";
 
 // CREATE
 export const createAirport = async (req, res) => {
@@ -15,9 +14,7 @@ export const createAirport = async (req, res) => {
 // READ ALL
 export const getAirports = async (req, res) => {
   try {
-    console.log("getting all airports")
-    const airports = await Airport.find().limit(50);
-    console.log(airports)
+    const airports = await Airport.find({ type: "large_airport" }).limit(1000);
     res.json(airports);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -40,11 +37,10 @@ export const getAirportById = async (req, res) => {
 // UPDATE
 export const updateAirport = async (req, res) => {
   try {
-    const updated = await Airport.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const updated = await Airport.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updated) {
       return res.status(404).json({ message: "Airport not found" });
