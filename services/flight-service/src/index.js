@@ -16,7 +16,7 @@ connectMongoDB();
 // routes
 app.use("/api/flights", flightRouter);
 
-const PORT = env.FLIGHT_SERVICE_PORT || 5002;
+const PORT = env.FLIGHT_SERVICE_PORT || 5000;
 app.listen(PORT, () => console.log(`Flight service running on port ${PORT}`));
 
 // // Runs every 2 days at midnight
