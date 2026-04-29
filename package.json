@@ -12,7 +12,8 @@
   "scripts": {
     "start:user-service": "npm run dev -w user-service",
     "start:airport-service": "npm run dev -w airport-service",
-    "start:flight-service": "npm run dev -w flight-service"
+    "start:flight-service": "npm run dev -w flight-service",
+    "start:flight-tracking-service": "npm run dev -w flight-tracking-service"
 
   },
   "devDependencies": {
