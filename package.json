@@ -4,6 +4,7 @@
   "description": "",
   "author": "",
   "private": true,
+  "type": "module",
   "license": "UNLICENSED",
   "workspaces": [
     "services/*",
@@ -14,7 +15,6 @@
     "start:airport-service": "npm run dev -w airport-service",
     "start:flight-service": "npm run dev -w flight-service",
     "start:flight-tracking-service": "npm run dev -w flight-tracking-service"
-
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
@@ -25,6 +25,8 @@
     "csv-parser": "^3.2.0",
     "csv-writer": "^1.6.0",
     "dotenv": "^17.4.2",
-    "mongoose": "^9.5.0"
+    "ioredis": "^5.10.1",
+    "mongoose": "^9.5.0",
+    "node-cron": "^4.2.1"
   }
 }

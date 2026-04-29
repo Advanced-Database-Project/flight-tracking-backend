@@ -1,24 +1,27 @@
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
-import { Server } from "socket.io";
 import env from "../../../shared/env.js";
+
+import { initializeSocket } from "./socket.js";
+import { initializeRedisSubscriptions } from "./redis.js";
+
+import "./cron.js"
 
 const app = express();
 app.use(cors());
+
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    methods: ["GET"],
-  },
-});
 
-io.on("connection", (socket) => {
-  console.log(`A user connected from React. Socket ID: ${socket.id}`);
-});
+// 1. Initialize Socket.io and get the 'io' instance
+const io = initializeSocket(httpServer);
 
-httpServer.listen(env.FLIGHT_TRACKING_SERIVCE_PORT || 5000, () => {
-  console.log(
-    `Flight Tracking Service started at ${env.FLIGHT_TRACKING_SERIVCE_PORT}`,
-  );
+// 2. Initialize Redis Pub/Sub, passing the 'io' instance so it can broadcast updates
+initializeRedisSubscriptions(io);
+
+const PORT = env.FLIGHT_TRACKING_SERIVCE_PORT || 5000;
+
+
+httpServer.listen(PORT, () => {
+  console.log(`Flight Tracking Service started at port ${PORT}`);
 });
