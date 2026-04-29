@@ -65,25 +65,23 @@ const FlightSchema = new mongoose.Schema(
     airline: mongoose.Schema.Types.Mixed,
 
     live: {
-        updated: String,
-        latitude: Number,
-        longitude: Number,
-        altitude: Number,
-        direction: Number,
-        speed_horizontal: Number,
-        speed_vertical: Number,
-        is_ground: Boolean
-      },
-    
+      updated: String,
+      latitude: Number,
+      longitude: Number,
+      altitude: Number,
+      direction: Number,
+      speed_horizontal: Number,
+      speed_vertical: Number,
+      is_ground: Boolean,
+    },
 
     fetchedAt: { type: Date, default: Date.now },
   },
   {
     collection: "flights",
     strict: false,
-  }
+  },
 );
-
 
 const Flight = mongoose.model("Flight", FlightSchema);
 export default Flight;
