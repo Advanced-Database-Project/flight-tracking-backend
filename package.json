@@ -2,6 +2,7 @@
   "name": "flight-tacking-backend",
   "version": "0.0.1",
   "description": "",
+  "type": "module",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
@@ -12,8 +13,8 @@
   "scripts": {
     "start:user-service": "npm run dev -w user-service",
     "start:airport-service": "npm run dev -w airport-service",
-    "start:flight-service": "npm run dev -w flight-service"
-
+    "start:flight-service": "npm run dev -w flight-service",
+    "start:route-finder-service": "npm run dev -w route-finder-service"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
@@ -24,6 +25,7 @@
     "csv-parser": "^3.2.0",
     "csv-writer": "^1.6.0",
     "dotenv": "^17.4.2",
-    "mongoose": "^9.5.0"
+    "mongoose": "^9.5.0",
+    "neo4j-driver": "^6.0.1"
   }
 }
