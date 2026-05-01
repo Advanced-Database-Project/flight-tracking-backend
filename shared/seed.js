@@ -1,44 +1,26 @@
-import neo4j from "neo4j-driver";
-import env from "./env.js";
 import connectneo4j from "./neo4j.js";
+import { fetchflights } from "./utils.js";
+import { storenodes } from "./utils.js";
+import { storerelationships } from "./utils.js";
+import { getdatafromNeo4j } from "./utils.js";
+import { driver } from "./neo4j.js";
 
 
 async function seed() {
-  const session = driver.session()
+  await connectneo4j()
+  
+   try {
+    const flights = await fetchflights()
 
-  try {
-    console.log('Fetching routes from AviationStack...')
+    await storenodes(flights)        
+    await storerelationships(flights)
 
-    const response = await axios.get('http://api.aviationstack.com/v1/routes', {
-      params: {
-        access_key: env.AVIATIONSTACK_KEY,
-        limit: 100
-      }
-    })
+    const data = await getdatafromNeo4j()
+    console.log('Sample record:', data)
 
-    const routes = response.data.data
-    console.log(`Got ${routes.length} routes`)
-
-    for (const route of routes) {
-      const dep = route.departure
-      const arr = route.arrival
-
-      if (!dep.iata || !arr.iata) continue
-
-      await session.run(`
-        MERGE (a:Airport {code: $from})
-        MERGE (b:Airport {code: $to})
-        MERGE (a)-[:FLIES_TO]->(b)
-      `, { from: dep.iata, to: arr.iata })
-
-      console.log(`Seeded: ${dep.iata} → ${arr.iata}`)
-    }
-
-    console.log('Done!')
   } catch (err) {
     console.error('Error:', err.message)
   } finally {
-    await session.close()
     await driver.close()
   }
 }
