@@ -171,3 +171,35 @@ export async function getdatafromNeo4j() {
   console.log(`Retrieved ${data.length} records`)
   return data
 }
+
+export async function findRoute(from, to) {
+  const result = await driver.executeQuery(`
+    MATCH path = shortestPath(
+      (a:Airport {code: $from})-[:FLIES_TO*1..10]->(b:Airport {code: $to})
+    )
+    RETURN 
+      [n in nodes(path) | properties(n)] AS airports,
+      [r in relationships(path) | properties(r)] AS flights,
+      length(path) AS hops
+  `, { from: from.toUpperCase(), to: to.toUpperCase() })
+
+  if (!result.records.length) return null
+
+    //console.log(result.records);
+
+  const r = result.records[0]
+
+  const airports = r.get('airports')
+  const flights = r.get('flights')
+
+    //console.log(r);
+
+  return {
+    hops: r.get('hops').toNumber(),
+    stops: airports.map(a => a.code),
+    airports,
+    flights
+  }
+}
+
+  
