@@ -32,20 +32,45 @@ export const fetchAndStoreFlights = async (req, res) => {
 // Read all stored flights
 export const getFlights = async (req, res) => {
   try {
+    const flights = await Flight.find();
 
-    const flights = await Flight.find(filter);
-    res.json(flights);
+    if (!flights) {
+      return res
+        .status(404)
+        .json({ status: 404, message: "Not found", entry: { data: [] } });
+    }
+
+    res.json({
+      status: 200,
+      mesage: "Flight records found",
+      entry: { data: [flights] },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// Read one stored flight by Mongo_id
+// Read one stored flight by _id
 export const getFlightById = async (req, res) => {
   try {
-    const flight = await Flight.findById(req.params.id);
-    if (!flight) return res.status(404).json({ message: "Flight not found" });
-    res.json(flight);
+    const { iata, date } = req.query;
+
+    const flight = await Flight.findOne({
+      "flight.iata": iata,
+      flight_date: date,
+    });
+
+    if (!flight) {
+      return res
+        .status(404)
+        .json({ status: 404, message: "Not found", entry: { data: [] } });
+    }
+
+    res.json({
+      status: 200,
+      mesage: "Flight record found",
+      entry: { data: [flight] },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -14,7 +14,8 @@
     "start:user-service": "npm run dev -w user-service",
     "start:airport-service": "npm run dev -w airport-service",
     "start:flight-service": "npm run dev -w flight-service",
-    "start:flight-tracking-service": "npm run dev -w flight-tracking-service"
+    "start:flight-tracking-service": "npm run dev -w flight-tracking-service",
+    "start:migration_script": "npm run dev -w dataset-migration"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
@@ -27,6 +28,7 @@
     "dotenv": "^17.4.2",
     "ioredis": "^5.10.1",
     "mongoose": "^9.5.0",
+    "nodemon": "^3.1.14",
     "node-cron": "^4.2.1"
   }
 }
