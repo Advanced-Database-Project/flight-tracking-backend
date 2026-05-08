@@ -1,5 +1,5 @@
 {
-  "name": "flight-tacking-backend",
+  "name": "flight-tracking-backend",
   "version": "0.0.1",
   "description": "",
   "type": "module",
@@ -15,7 +15,9 @@
     "start:airport-service": "npm run dev -w airport-service",
     "start:flight-service": "npm run dev -w flight-service",
     "start:flight-tracking-service": "npm run dev -w flight-tracking-service",
-    "start:migration_script": "npm run dev -w dataset-migration"
+    "start:migration_script": "npm run dev -w dataset-migration",
+    "start:route-finder-service": "npm run dev -w route-finder-service"
+    
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

@@ -1,8 +1,8 @@
 import connectneo4j from "./neo4j.js";
-import { fetchflights } from "./utils.js";
-import { storenodes } from "./utils.js";
-import { storerelationships } from "./utils.js";
-import { getdatafromNeo4j } from "./utils.js";
+import { fetchFlights } from "./utils.js";
+import { storeNodes } from "./utils.js";
+import { storeRelationships } from "./utils.js";
+import { getDataFromNeo4j } from "./utils.js";
 import { driver } from "./neo4j.js";
 
 
@@ -10,12 +10,12 @@ async function seed() {
   await connectneo4j()
   
    try {
-    const flights = await fetchflights()
+    const flights = await fetchFlights()
 
-    await storenodes(flights)        
-    await storerelationships(flights)
+    await storeNodes(flights)        
+    await storeRelationships(flights)
 
-    const data = await getdatafromNeo4j()
+    const data = await getDataFromNeo4j()
     console.log('Sample record:', data)
 
   } catch (err) {
