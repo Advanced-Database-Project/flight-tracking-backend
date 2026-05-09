@@ -1,10 +1,11 @@
-
 ## Project setup
 
 ```bash
 $ npm install
 $ npm install redis
 ```
+
+instrall redis and do first npm i
 
 ## Compile and run the project
 
