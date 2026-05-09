@@ -1,8 +1,12 @@
-import Redis from "ioredis";
+
 import env from "../../../shared/env.js";
+import { createClient } from 'redis';
+
+const redisClient = createClient();
+redisClient.connect();
 
 // create redis client
-const redisClient = new Redis(env.REDIS_URL || "redis://localhost:6379");
+// const redisClient = new Redis(env.REDIS_URL || "redis://localhost:6379");
 
 // create a duplicate client for Pub/Sub
 const subscriberClient = redisClient.duplicate();
