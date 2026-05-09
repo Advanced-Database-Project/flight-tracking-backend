@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import env from "../../../shared/env.js";
 import { connectRedis } from "./redisClient.js";
 import { fetchStates } from "./openSkyService.js";
@@ -48,3 +49,29 @@ async function start() {
 }
 
 start();
+=======
+import express from "express";
+import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import env from "../../../shared/env.js";
+
+const app = express();
+app.use(cors());
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    methods: ["GET"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log(`A user connected from React. Socket ID: ${socket.id}`);
+});
+
+httpServer.listen(env.FLIGHT_TRACKING_SERIVCE_PORT || 5000, () => {
+  console.log(
+    `Flight Tracking Service started at ${env.FLIGHT_TRACKING_SERIVCE_PORT}`,
+  );
+});
+>>>>>>> 2354f67778b734cd34f9f5cbaf476f31f8922576
