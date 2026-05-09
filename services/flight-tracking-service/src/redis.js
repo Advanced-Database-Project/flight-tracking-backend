@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+
 import env from "../../../shared/env.js";
 import { createClient } from 'redis';
 
