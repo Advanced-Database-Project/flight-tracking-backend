@@ -16,9 +16,6 @@ export const initializeSocket = (httpServer) => {
   io.on("connection", async (socket) => {
     console.log(`A user connected from React. Socket ID: ${socket.id}`);
     // await getHistoricalDataFromMongo();
-    await getLiveData();
-
-    startFlightTrackingPublisher();
 
     socket.on("request-initial-state", async () => {
       try {
@@ -47,6 +44,12 @@ export const initializeSocket = (httpServer) => {
         console.error("Failed to fetch initial state:", err);
       }
     });
+    
+    await getLiveData();
+
+    startFlightTrackingPublisher();
+
+    
 
     socket.on("disconnect", () => {
       console.log(`User disconnected. Socket ID: ${socket.id}`);

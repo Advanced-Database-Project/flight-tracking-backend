@@ -1,12 +1,10 @@
 // (Runs every 1 second)
 
-import { redisClient } from "./redis.js";
+import { redisClient,subscriberClient } from "./redis.js";
 
 const ZSET_KEY = "flight-tracking-data";
 const PUB_CHANNEL = "live-flight-tracking";
 
-// historical data starts at this timestamp
-let currentPlaybackTime = 1778330347;
 
 const startFlightTrackingPublisher = async () => {
     setInterval(async () => {
@@ -31,11 +29,6 @@ const startFlightTrackingPublisher = async () => {
       );
     }
 
-
-    
-
-    // Advance the playback clock by 10 second for the next loop
-    currentPlaybackTime += 10;
   } catch (error) {
     console.error("Playback failed:", error);
   }
