@@ -6,16 +6,35 @@ import { driver } from "./neo4j.js";
 export async function fetchFlights() {
   console.log('Fetching flights from AviationStack...')
 
-  const response = await axios.get('http://api.aviationstack.com/v1/flights', {
-    params: {
-      access_key: env.AVIATIONSTACK_KEY,
-      limit: 100
-    }
-  })
+  const limit = 100     
+  const totalPages = 5  
+  let allFlights = []
 
-  const flights = response.data.data
-  console.log(`Got ${flights.length} flights`)
-  return flights
+  for (let page = 0; page < totalPages; page++) {
+    const offset = page * limit
+
+    console.log(`Fetching page ${page + 1} (offset ${offset})...`)
+
+    const response = await axios.get('http://api.aviationstack.com/v1/flights', {
+      params: {
+        access_key: env.AVIATIONSTACK_KEY,
+        limit: limit,
+        offset: offset
+      }
+    })
+
+    const flights = response.data.data
+    if (!flights || flights.length === 0) {
+      console.log('No more flights, stopping early.')
+      break
+    }
+
+    allFlights = [...allFlights, ...flights]
+    console.log(`Got ${flights.length} flights from page ${page + 1}, total so far: ${allFlights.length}`)
+  }
+
+  console.log(`Total flights fetched: ${allFlights.length}`)
+  return allFlights
 }
 
 export async function storeNodes(flights) {
@@ -184,7 +203,7 @@ export async function getDataFromNeo4j() {
 export async function findRoute(from, to) {
   const result = await driver.executeQuery(`
     MATCH (src:Airport {code: $from})<-[r1:DEPARTS_FROM]-(f1:Flight)-[r2:ARRIVES_AT]->(dst:Airport {code: $to})
-    WHERE r1.scheduled >= datetime()
+    WHERE datetime(r1.scheduled) >= datetime()
     OPTIONAL MATCH (al1:Airline)-[:OPERATES]->(f1)
     RETURN 0 AS layovers,
            properties(src) AS source,
@@ -198,8 +217,9 @@ export async function findRoute(from, to) {
 
     MATCH (src:Airport {code: $from})<-[r1:DEPARTS_FROM]-(f1:Flight)-[r2:ARRIVES_AT]->(mid:Airport)<-[r3:DEPARTS_FROM]-(f2:Flight)-[r4:ARRIVES_AT]->(dst:Airport {code: $to})
     WHERE mid.code <> $from AND mid.code <> $to
-      AND r1.scheduled >= datetime()
-      AND r3.scheduled >= r2.scheduled + duration({minutes: 30})
+    AND datetime(r1.scheduled) >= datetime()
+    AND r2.scheduled IS NOT NULL AND r3.scheduled IS NOT NULL
+    AND datetime(r3.scheduled) >= datetime(r2.scheduled) + duration({minutes: 5})
     OPTIONAL MATCH (al1:Airline)-[:OPERATES]->(f1)
     OPTIONAL MATCH (al2:Airline)-[:OPERATES]->(f2)
     RETURN 1 AS layovers,
@@ -216,11 +236,13 @@ export async function findRoute(from, to) {
 
     MATCH (src:Airport {code: $from})<-[r1:DEPARTS_FROM]-(f1:Flight)-[r2:ARRIVES_AT]->(mid1:Airport)<-[r3:DEPARTS_FROM]-(f2:Flight)-[r4:ARRIVES_AT]->(mid2:Airport)<-[r5:DEPARTS_FROM]-(f3:Flight)-[r6:ARRIVES_AT]->(dst:Airport {code: $to})
     WHERE mid1.code <> $from AND mid1.code <> $to
-      AND mid2.code <> $from AND mid2.code <> $to
-      AND mid1.code <> mid2.code
-      AND r1.scheduled >= datetime()
-      AND r3.scheduled >= r2.scheduled + duration({minutes: 30})
-      AND r5.scheduled >= r4.scheduled + duration({minutes: 30})
+  AND mid2.code <> $from AND mid2.code <> $to
+  AND mid1.code <> mid2.code
+  AND datetime(r1.scheduled) >= datetime()
+  AND r2.scheduled IS NOT NULL AND r3.scheduled IS NOT NULL
+  AND datetime(r3.scheduled) >= datetime(r2.scheduled) + duration({minutes: 5})
+  AND r4.scheduled IS NOT NULL AND r5.scheduled IS NOT NULL
+  AND datetime(r5.scheduled) >= datetime(r4.scheduled) + duration({minutes: 5})
     OPTIONAL MATCH (al1:Airline)-[:OPERATES]->(f1)
     OPTIONAL MATCH (al2:Airline)-[:OPERATES]->(f2)
     OPTIONAL MATCH (al3:Airline)-[:OPERATES]->(f3)
@@ -237,8 +259,12 @@ export async function findRoute(from, to) {
     LIMIT 5
   `, { from: from.toUpperCase(), to: to.toUpperCase() })
 
+  //console.log("response from neo4j",result)
+
   if (!result.records.length) return null
-  
+
+
+
   return result.records
     .sort((a, b) => Number(a.get('layovers')) - Number(b.get('layovers')))
     .slice(0, 5)
