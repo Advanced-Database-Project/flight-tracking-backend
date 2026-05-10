@@ -47,6 +47,7 @@ export function parseFlightHash(raw) {
     baroAltitude: num("baroAltitude"),
     geoAltitude: num("geoAltitude"),
     velocity: num("velocity"),
+    true_track: num("true_track"),
     heading: num("heading"),
     verticalRate: num("verticalRate"),
     onGround: raw.onGround === "1",
@@ -56,7 +57,9 @@ export function parseFlightHash(raw) {
 }
 
 function isFinitePair(lon, lat) {
-  return Number.isFinite(lon) && Number.isFinite(lat) && lat >= -90 && lat <= 90;
+  return (
+    Number.isFinite(lon) && Number.isFinite(lat) && lat >= -90 && lat <= 90
+  );
 }
 
 // =====================================================================
@@ -78,9 +81,9 @@ export async function upsertFlights(flights) {
 
     const doc = { ...f, ts };
 
-    pipeline.hSet(FLIGHT_KEY(f.icao24), toRedisHash(doc));   // store hash
-    pipeline.expire(FLIGHT_KEY(f.icao24), TTL_SECONDS);      // TTL refresh
-    pipeline.sAdd(ACTIVE_KEY, f.icao24);                     // active set
+    pipeline.hSet(FLIGHT_KEY(f.icao24), toRedisHash(doc)); // store hash
+    pipeline.expire(FLIGHT_KEY(f.icao24), TTL_SECONDS); // TTL refresh
+    pipeline.sAdd(ACTIVE_KEY, f.icao24); // active set
 
     geoMembers.push({
       longitude: f.longitude,
@@ -104,7 +107,7 @@ export async function upsertFlights(flights) {
       ts,
       count: writable.length,
       flights: writable,
-    })
+    }),
   );
 
   return { written: writable.length };
@@ -138,7 +141,7 @@ export async function getNearby({ lat, lon, radiusKm = 200, limit = 500 }) {
     { longitude: lon, latitude: lat },
     { radius: radiusKm, unit: "km" },
     ["WITHCOORD", "WITHDIST"],
-    { COUNT: limit, SORT: "ASC" }
+    { COUNT: limit, SORT: "ASC" },
   );
   if (!results?.length) return [];
 
@@ -161,7 +164,9 @@ export async function reapStale() {
   const members = await redis.zRange(GEO_KEY, 0, -1);
   if (!members.length) return 0;
 
-  const exists = await Promise.all(members.map((m) => redis.exists(FLIGHT_KEY(m))));
+  const exists = await Promise.all(
+    members.map((m) => redis.exists(FLIGHT_KEY(m))),
+  );
   const dead = members.filter((_, i) => !exists[i]);
   if (!dead.length) return 0;
 

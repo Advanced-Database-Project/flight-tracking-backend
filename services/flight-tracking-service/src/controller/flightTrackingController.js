@@ -12,6 +12,7 @@ export const transformFlight = (flight) => {
     latitude: flight[6],
     altitude: flight[7],
     velocity: flight[9],
+    true_track: flight[10],
   };
 };
 
@@ -35,7 +36,6 @@ export const getFlightDataForTimestamp = async (timestamp) => {
 
 export const getLiveFlightData = async () => {
   try {
-
     const response = await axios.get(
       "https://opensky-network.org/api/states/all",
       {

@@ -56,6 +56,7 @@ function mapState(s) {
     verticalRate: s[11],
     geoAltitude: s[13],
     squawk: s[14],
+    trueTrack: s[10],
   };
 }
 
@@ -64,7 +65,10 @@ export async function fetchStates(bbox) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
   const params = {};
-  if (bbox && [bbox.lamin, bbox.lomin, bbox.lamax, bbox.lomax].every(Number.isFinite)) {
+  if (
+    bbox &&
+    [bbox.lamin, bbox.lomin, bbox.lamax, bbox.lomax].every(Number.isFinite)
+  ) {
     params.lamin = bbox.lamin;
     params.lomin = bbox.lomin;
     params.lamax = bbox.lamax;

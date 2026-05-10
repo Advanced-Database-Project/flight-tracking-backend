@@ -40,6 +40,7 @@ export const initializeSocket = (httpServer) => {
             PUB_CHANNEL,
             JSON.stringify(currentFlights),
           );
+          socket.emit(PUB_CHANNEL, JSON.stringify(currentFlights));
           console.log(`📡 Broadcasted ${currentFlights.length} live flights`);
         }
       } catch (err) {

@@ -44,6 +44,10 @@ const LiveFlightTrackingSchema = new mongoose.Schema(
     geoaltitude: {
       type: Number,
     },
+
+    true_track: {
+      type: Number,
+    },
   },
   {
     collection: "live_flight_tracking",
