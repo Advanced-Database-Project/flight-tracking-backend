@@ -16,8 +16,9 @@
     "start:flight-service": "npm run dev -w flight-service",
     "start:flight-tracking-service": "npm run dev -w flight-tracking-service",
     "start:migration_script": "npm run dev -w dataset-migration",
-    "start:route-finder-service": "npm run dev -w route-finder-service"
-    
+    "start:route-finder-service": "npm run dev -w route-finder-service",
+    "start:live-dashboard-service": "npm run dev -w live-dashboard-service"
+
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

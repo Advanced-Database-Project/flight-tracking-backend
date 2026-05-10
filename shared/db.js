@@ -12,4 +12,15 @@ const connectMongoDB = async () => {
   }
 };
 
+const connectOpenskyMongoDB = async () => {
+  try {
+    await mongoose.connect(env.MONGODB_LOCAL_URI);
+    console.log("open sky MongoDB connected");
+  } catch (error) {
+    console.error(error.message);
+    process.exit(1);
+  }
+};
+
 export default connectMongoDB;
+export {connectOpenskyMongoDB}
