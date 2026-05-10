@@ -8,7 +8,8 @@ redisClient.connect();
 // const redisClient = new Redis(env.REDIS_URL || "redis://localhost:6379");
 
 // create a duplicate client for Pub/Sub
-const subscriberClient = redisClient.duplicate();
+const subscriberClient = createClient();
+subscriberClient.connect();
 
 redisClient.on("error", (err) => console.error("Redis Client Error:", err));
 subscriberClient.on("error", (err) =>
@@ -19,27 +20,38 @@ subscriberClient.on("error", (err) =>
 const initializeRedisSubscriptions = (io) => {
   const channelName = "live-flight-tracking";
 
-  subscriberClient.subscribe(channelName, (err, count) => {
-    if (err) {
-      console.error("Failed to subscribe to Redis channel:", err);
-      return;
-    }
-    console.log(
-      `Subscribed successfully! Listening to ${count} Redis channel(s).`,
-    );
-  });
+  // subscriberClient.subscribe(channelName, (err, count) => {
+  //   if (err) {
+  //     console.error("Failed to subscribe to Redis channel:", err);
+  //     return;
+  //   }
+  //   console.log(
+  //     `Subscribed successfully! Listening to ${count} Redis channel(s).`,
+  //   );
+  // });
 
-  subscriberClient.on("message", (channel, message) => {
-    if (channel === channelName) {
+   subscriberClient.subscribe(channelName, (message, channel) => {
       try {
         const flightData = JSON.parse(message);
-
-        io.emit(channelName, flightData);
+        io.emit("live-flight-tracking", flightData);
+        console.log(`📡 Emitting live flight data to React frontend from ${channel}`);
       } catch (error) {
         console.error("Error parsing Redis message:", error);
       }
-    }
-  });
+    });
+
+  // subscriberClient.on("message", (channel, message) => {
+  //   if (channel === channelName) {
+  //     try {
+  //       const flightData = JSON.parse(message);
+
+  //       io.emit("live-flight-tracking", flightData);
+  //       console.log("emitting live flight data from pub channel");
+  //     } catch (error) {
+  //       console.error("Error parsing Redis message:", error);
+  //     }
+  //   }
+  // });
 };
 
 const storeObjectRedis = async (flights) => {
@@ -59,4 +71,9 @@ const storeObjectRedis = async (flights) => {
   console.log("=== final", JSON.parse(data.slice(0, 1000)));
 };
 
-export { initializeRedisSubscriptions, redisClient, storeObjectRedis };
+export {
+  initializeRedisSubscriptions,
+  redisClient,
+  storeObjectRedis,
+  subscriberClient,
+};
