@@ -55,5 +55,6 @@ export const getLiveFlightData = async () => {
   } catch (err) {
     console.log("ERROR getting  live flight tracking data from API ");
     console.log("ERRORRRRRRRRRRRRR: ", err.message);
+    throw err;
   }
 };
