@@ -38,10 +38,12 @@ export const fetchAndStoreFlights = async (req, res) => {
 export const getFlights = async (req, res) => {
   try {
     const flights = await Flight.find();
-    if (!flights)
+
+    if (!flights) {
       return res
         .status(404)
         .json({ status: 404, message: "Not found", entry: { data: [] } });
+    }
 
     res.json({
       status: 200,
@@ -57,14 +59,18 @@ export const getFlights = async (req, res) => {
 export const getFlightById = async (req, res) => {
   try {
     const { iata, date } = req.query;
+
     const flight = await Flight.findOne({
       "flight.iata": iata,
       flight_date: date,
     });
-    if (!flight)
+
+    if (!flight) {
       return res
         .status(404)
         .json({ status: 404, message: "Not found", entry: { data: [] } });
+    }
+
     res.json({
       status: 200,
       mesage: "Flight record found",
