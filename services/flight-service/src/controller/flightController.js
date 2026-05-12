@@ -8,13 +8,18 @@ const AVIATIONSTACK_URL = "http://api.aviationstack.com/v1/flights";
 // Fetch from Aviationstack
 export const fetchAndStoreFlights = async (req, res) => {
   try {
-    const params = {
-      access_key: AVIATIONSTACK_KEY,
-      ...req.query,
-    };
+    let flights = [];
 
-    const { data } = await axios.get(AVIATIONSTACK_URL, { params });
-    const flights = data.data;
+    for (let i = 0; i < 5; i++) {
+      const params = {
+        access_key: AVIATIONSTACK_KEY,
+        limit: 100,
+        offset: i * 100,
+      };
+
+      const { data } = await axios.get(AVIATIONSTACK_URL, { params });
+      flights.push(...data.data);
+    }
 
     await Flight.deleteMany({});
 
@@ -48,7 +53,7 @@ export const getFlights = async (req, res) => {
   }
 };
 
-// Read one stored flight by _id
+// Read one stored flight using iata and date
 export const getFlightById = async (req, res) => {
   try {
     const { iata, date } = req.query;
