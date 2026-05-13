@@ -5,22 +5,24 @@ import env from "../../../../shared/env.js";
 
 // ----------------------------------------
 
-const now = new Date("2026-05-10T12:00:00Z");
+const day = 1000 * 24 * 60 * 60;
+const dayAgo = Date.now() - day;
+const now = new Date(dayAgo)
 
 export const getArrivalDepartureByAirportData = async (data) => {
   const tenMinutesBefore = new Date(now.getTime() - 10 * 60 * 1000);
-  const oneHourLater = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+  const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
 
   try {
     const response = await Promise.all([
       axios.get(
         env.LIVE_DASHBOARD_EXTERNAL_API +
-          "api/flights/arrival?airport=" +
-          data?.city +
-          "&begin=" +
-          Math.floor(tenMinutesBefore.getTime() / 1000) +
-          "&end=" +
-          Math.floor(oneHourLater.getTime() / 1000),
+        "api/flights/arrival?airport=" +
+        data?.city +
+        "&begin=" +
+        Math.floor(tenMinutesBefore.getTime() / 1000) +
+        "&end=" +
+        Math.floor(oneHourLater.getTime() / 1000),
         {
           headers: {
             Authorization: "Bearer " + env.TOKEN,
@@ -30,12 +32,12 @@ export const getArrivalDepartureByAirportData = async (data) => {
 
       axios.get(
         env.LIVE_DASHBOARD_EXTERNAL_API +
-          "api/flights/departure?airport=" +
-          data?.city +
-          "&begin=" +
-          Math.floor(tenMinutesBefore.getTime() / 1000) +
-          "&end=" +
-          Math.floor(oneHourLater.getTime() / 1000),
+        "api/flights/departure?airport=" +
+        data?.city +
+        "&begin=" +
+        Math.floor(tenMinutesBefore.getTime() / 1000) +
+        "&end=" +
+        Math.floor(oneHourLater.getTime() / 1000),
 
         {
           headers: {
