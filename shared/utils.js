@@ -2,10 +2,6 @@ import axios from "axios";
 import env from "./env.js";
 import { driver } from "./neo4j.js";
 
-import { get } from "mongoose";
-import axios from "axios";
-import env from "./env.js";
-
 export async function fetchFlights() {
   console.log("Fetching flights from AviationStack...");
 
