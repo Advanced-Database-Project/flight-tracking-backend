@@ -1,4 +1,3 @@
-// (Runs every 1 second)
 
 import { redisClient,subscriberClient } from "./redis.js";
 
@@ -20,7 +19,7 @@ const startFlightTrackingPublisher = async () => {
 
    
       const currentFlights = rawFlightData
-        .filter((data) => data !== null)
+        .filter((data) => data !== null )
         .map((data) => JSON.parse(data));
 
      await redisClient.publish(PUB_CHANNEL, JSON.stringify(currentFlights));

@@ -13,26 +13,27 @@ export const transformFlight = (flight) => {
     altitude: flight[7],
     velocity: flight[9],
     true_track: flight[10],
+    category: flight[16]
   };
 };
 
-export const getFlightDataForTimestamp = async (timestamp) => {
-  try {
-    const flightData = await LiveFlightTracking.find({
-      time: `${timestamp}`,
-    }).limit(10);
-    console.log(
-      "SUCCESS for getting flight tracking data in MONGO DB for: ",
-      timestamp,
-      "length: ",
-      flightData.length,
-    );
-    return flightData;
-  } catch (err) {
-    console.log("ERROR getting flight tracking data for time: ", timestamp);
-    console.log("ERRORRRRRRRRRRRRR: ", err.message);
-  }
-};
+// export const getFlightDataForTimestamp = async (timestamp) => {
+//   try {
+//     const flightData = await LiveFlightTracking.find({
+//       time: `${timestamp}`,
+//     }).limit(10);
+//     console.log(
+//       "SUCCESS for getting flight tracking data in MONGO DB for: ",
+//       timestamp,
+//       "length: ",
+//       flightData.length,
+//     );
+//     return flightData;
+//   } catch (err) {
+//     console.log("ERROR getting flight tracking data for time: ", timestamp);
+//     console.log("ERRORRRRRRRRRRRRR: ", err.message);
+//   }
+// };
 
 export const getLiveFlightData = async () => {
   try {
@@ -55,5 +56,6 @@ export const getLiveFlightData = async () => {
   } catch (err) {
     console.log("ERROR getting  live flight tracking data from API ");
     console.log("ERRORRRRRRRRRRRRR: ", err.message);
+    throw err;
   }
 };
