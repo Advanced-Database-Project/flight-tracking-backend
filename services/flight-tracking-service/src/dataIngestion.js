@@ -1,6 +1,5 @@
 import { redisClient } from "./redis.js";
 import {
-  getFlightDataForTimestamp,
   getLiveFlightData,
   transformFlight,
 } from "./controller/flightTrackingController.js";
@@ -78,7 +77,7 @@ const getHistoricalDataFromMongo = async () => {
 };
 
 const getLiveData = async () => {
-    setInterval(async () => {
+    // setInterval(async () => {
   try {
    
     const rawFlights = await getLiveFlightData();
@@ -101,7 +100,7 @@ const getLiveData = async () => {
   } catch (error) {
     console.error("Playback failed:", error);
   }
-    }, 15000);
+    // }, 15000);
 };
 
 export { ingestHistoricalDataToRedis, getHistoricalDataFromMongo, getLiveData };

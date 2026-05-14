@@ -102,24 +102,30 @@ function parseFlight(raw) {
 }
 
 export async function detectCollisions() {
+//get cone params
   const cone = await getConeConfig();
 
+  // get all ids of flight
   const ids = await redisClient.zRange(GEO_KEY, 0, -1);
   if (ids.length < 2) return { cone, alerts: [] };
 
+  // get all data of flights using their ids
   const pipe = redisClient.multi();
   ids.forEach((id) => pipe.get(FLIGHT_KEY(id)));
   const rawList = await pipe.exec();
+  // filter out flights if they do not hav lat, lon, true track or velocity 
   const planes = rawList.map(parseFlight).filter((p) =>
     p && p.latitude != null && p.longitude != null
       && p.true_track != null && p.velocity != null
   );
+  // transform each flight to [icao, flight location]
   const byId = new Map(planes.map((p) => [p.icao24, p]));
 
   const seenPairs = new Set();
   const alerts = [];
 
   await Promise.all(planes.map(async (a) => {
+    // for each plane search nerby flights with radius =  cone length
     const neighbors = await redisClient.geoSearchWith(
       GEO_KEY,
       { longitude: a.longitude, latitude: a.latitude },
@@ -128,6 +134,7 @@ export async function detectCollisions() {
       { COUNT: 200, SORT: "ASC" }
     );
 
+    // 
     for (const n of neighbors) {
       if (n.member === a.icao24) continue;
 
@@ -165,21 +172,24 @@ export async function detectCollisions() {
   return { cone, alerts };
 }
 
-export function startCollisionDetector() {
-  setInterval(async () => {
+export async function startCollisionDetector() {
+  // setInterval(async () => {
     try {
       const payload = await detectCollisions();
+      console.log("alerts generated: ", payload.alerts.length)
       if (payload.alerts.length === 0) return;
-      const message = JSON.stringify({
-        ts: Math.floor(Date.now() / 1000),
-        ...payload,
-      });
-      await redisClient.publish(ALERT_CHANNEL, message);
-      console.log(`[collision] ${payload.alerts.length} alert(s) published`);
+
+      return payload;
+      // const message = JSON.stringify({
+      //   ts: Math.floor(Date.now() / 1000),
+      //   ...payload,
+      // });
+      // await redisClient.publish(ALERT_CHANNEL, message);
+      // console.log(`[collision] ${payload.alerts.length} alert(s) published`);
     } catch (e) {
       console.error("collision detector error:", e.message);
     }
-  }, 3000);
+  // }, 15000);
 }
 
 export { ALERT_CHANNEL };

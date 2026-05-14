@@ -1,7 +1,7 @@
 import cron from "node-cron";
 import { fetchFlights } from "./fetchFlights.js";
 import { transformFlight } from "./controller/flightTrackingController.js";
-import { redisClient, storeObjectRedis } from "./redis.js";
+// import { redisClient, storeObjectRedis } from "./redis.js";
 import axios from "axios";
 import fs from "fs";
 
@@ -14,7 +14,7 @@ cron.schedule("*/5 * * * * *", async () => {
 
     const flights = jsonData?.states?.map(transformFlight);
 
-    storeObjectRedis(jsonData);
+    // storeObjectRedis(jsonData);
 
     console.log(`Stored ${flights.length} flights`);
   } catch (err) {
