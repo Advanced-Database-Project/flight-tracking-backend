@@ -300,7 +300,7 @@ export const getAccesstoken = async () => {
       }),
     );
 
-    console.log(response);
+    // console.log(response);
 
     console.log("SUCCESS for getting access token: ", response.data);
 
