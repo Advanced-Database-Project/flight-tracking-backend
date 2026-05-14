@@ -6,6 +6,17 @@ import {
 
 let currentPlaybackTime = 1638748800;
 
+const isValidFlight = (flight) => {
+  return (
+    flight[0] != null &&
+    flight[5] != null &&
+    flight[6] != null &&
+    flight[7] != null &&
+    flight[9] != null &&
+    flight[10] != null
+  );
+};
+
 const ingestHistoricalDataToRedis = async (mongoData) => {
   const ZSET_KEY = "flight-tracking-data";
   const multi = redisClient.multi();
@@ -62,7 +73,9 @@ const getHistoricalDataFromMongo = async () => {
     );
 
     if (rawFlights.states.length > 0) {
-      const flights = rawFlights.states.map(transformFlight);
+      const flights = rawFlights.states
+      .filter(isValidFlight)
+      .map(transformFlight);
       ingestLiveDataToRedis(rawFlights.time, flights);
     } else {
       console.log(
