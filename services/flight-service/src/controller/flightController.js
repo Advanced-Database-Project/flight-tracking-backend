@@ -44,6 +44,7 @@ export const getFlights = async (req, res) => {
         .status(404)
         .json({ status: 404, message: "Not found", entry: { data: [] } });
     }
+    console.log("Found total flights: ",flights.length)
 
     res.json({
       status: 200,

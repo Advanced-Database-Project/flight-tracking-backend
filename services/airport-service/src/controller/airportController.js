@@ -15,6 +15,7 @@ export const createAirport = async (req, res) => {
 export const getAirports = async (req, res) => {
   try {
     const airports = await Airport.find({ type: "large_airport" });
+    console.log("Found total airpots: ",airports.length)
     res.json(airports);
   } catch (err) {
     res.status(500).json({ error: err.message });
