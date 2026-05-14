@@ -6,8 +6,8 @@ import routeRoutes from './routes/routeRoutes.js'
 const app = express()
 
 await connectneo4j()
-app.use('/routes', routeRoutes)
+app.use('/api/routes', routeRoutes)
 
-app.listen(env.ROUTE_FINDER_SERVICE_PORT, () => 
+app.listen(env.ROUTE_FINDER_SERVICE_PORT, () =>
   console.log(`Route Finder running on port ${env.ROUTE_FINDER_SERVICE_PORT}`)
 )
