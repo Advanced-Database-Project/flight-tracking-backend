@@ -8,11 +8,11 @@ import { driver } from "./neo4j.js";
 
 async function seed() {
   await connectneo4j()
-  
-   try {
+
+  try {
     const flights = await fetchFlights()
 
-    await storeNodes(flights)        
+    await storeNodes(flights)
     await storeRelationships(flights)
 
     const data = await getDataFromNeo4j()

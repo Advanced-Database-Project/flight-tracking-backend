@@ -210,11 +210,14 @@ export async function getDataFromNeo4j() {
   return data;
 }
 
-export async function findRoute(from, to) {
-  const result = await driver.executeQuery(
-    `
+export async function findRoute(from, to, date) {
+  const startOfDay = `${date}T00:00:00+00:00`
+  const endOfDay   = `${date}T23:59:59+00:00`
+
+  const result = await driver.executeQuery(`
     MATCH (src:Airport {code: $from})<-[r1:DEPARTS_FROM]-(f1:Flight)-[r2:ARRIVES_AT]->(dst:Airport {code: $to})
-    WHERE datetime(r1.scheduled) >= datetime()
+    WHERE datetime(r1.scheduled) >= datetime($startOfDay)
+      AND datetime(r1.scheduled) <= datetime($endOfDay)
     OPTIONAL MATCH (al1:Airline)-[:OPERATES]->(f1)
     RETURN 0 AS layovers,
            properties(src) AS source,
@@ -228,9 +231,10 @@ export async function findRoute(from, to) {
 
     MATCH (src:Airport {code: $from})<-[r1:DEPARTS_FROM]-(f1:Flight)-[r2:ARRIVES_AT]->(mid:Airport)<-[r3:DEPARTS_FROM]-(f2:Flight)-[r4:ARRIVES_AT]->(dst:Airport {code: $to})
     WHERE mid.code <> $from AND mid.code <> $to
-    AND datetime(r1.scheduled) >= datetime()
-    AND r2.scheduled IS NOT NULL AND r3.scheduled IS NOT NULL
-    AND datetime(r3.scheduled) >= datetime(r2.scheduled) + duration({minutes: 5})
+      AND datetime(r1.scheduled) >= datetime($startOfDay)
+      AND datetime(r1.scheduled) <= datetime($endOfDay)
+      AND r2.scheduled IS NOT NULL AND r3.scheduled IS NOT NULL
+      AND datetime(r3.scheduled) >= datetime(r2.scheduled) + duration({minutes: 5})
     OPTIONAL MATCH (al1:Airline)-[:OPERATES]->(f1)
     OPTIONAL MATCH (al2:Airline)-[:OPERATES]->(f2)
     RETURN 1 AS layovers,
@@ -247,13 +251,14 @@ export async function findRoute(from, to) {
 
     MATCH (src:Airport {code: $from})<-[r1:DEPARTS_FROM]-(f1:Flight)-[r2:ARRIVES_AT]->(mid1:Airport)<-[r3:DEPARTS_FROM]-(f2:Flight)-[r4:ARRIVES_AT]->(mid2:Airport)<-[r5:DEPARTS_FROM]-(f3:Flight)-[r6:ARRIVES_AT]->(dst:Airport {code: $to})
     WHERE mid1.code <> $from AND mid1.code <> $to
-  AND mid2.code <> $from AND mid2.code <> $to
-  AND mid1.code <> mid2.code
-  AND datetime(r1.scheduled) >= datetime()
-  AND r2.scheduled IS NOT NULL AND r3.scheduled IS NOT NULL
-  AND datetime(r3.scheduled) >= datetime(r2.scheduled) + duration({minutes: 5})
-  AND r4.scheduled IS NOT NULL AND r5.scheduled IS NOT NULL
-  AND datetime(r5.scheduled) >= datetime(r4.scheduled) + duration({minutes: 5})
+      AND mid2.code <> $from AND mid2.code <> $to
+      AND mid1.code <> mid2.code
+      AND datetime(r1.scheduled) >= datetime($startOfDay)
+      AND datetime(r1.scheduled) <= datetime($endOfDay)
+      AND r2.scheduled IS NOT NULL AND r3.scheduled IS NOT NULL
+      AND datetime(r3.scheduled) >= datetime(r2.scheduled) + duration({minutes: 5})
+      AND r4.scheduled IS NOT NULL AND r5.scheduled IS NOT NULL
+      AND datetime(r5.scheduled) >= datetime(r4.scheduled) + duration({minutes: 5})
     OPTIONAL MATCH (al1:Airline)-[:OPERATES]->(f1)
     OPTIONAL MATCH (al2:Airline)-[:OPERATES]->(f2)
     OPTIONAL MATCH (al3:Airline)-[:OPERATES]->(f3)
@@ -268,24 +273,20 @@ export async function findRoute(from, to) {
             {from: mid2.code, to: dst.code, flight: properties(f3), airline: properties(al3),
              departure: properties(r5), arrival: properties(r6)}] AS segments
     LIMIT 5
-  `,
-    { from: from.toUpperCase(), to: to.toUpperCase() },
-  );
+  `, { from: from.toUpperCase(), to: to.toUpperCase(), startOfDay, endOfDay })
 
-  //console.log("response from neo4j",result)
-
-  if (!result.records.length) return null;
+  if (!result.records.length) return null
 
   return result.records
-    .sort((a, b) => Number(a.get("layovers")) - Number(b.get("layovers")))
+    .sort((a, b) => Number(a.get('layovers')) - Number(b.get('layovers')))
     .slice(0, 5)
-    .map((r) => ({
-      source: r.get("source"),
-      destination: r.get("destination"),
-      layovers: parseInt(r.get("layovers")),
-      layoverAirports: r.get("layoverAirports"),
-      segments: r.get("segments"),
-    }));
+    .map(r => ({
+      source:          r.get('source'),
+      destination:     r.get('destination'),
+      layovers:        parseInt(r.get('layovers')),
+      layoverAirports: r.get('layoverAirports'),
+      segments:        r.get('segments')
+    }))
 }
-
+ 
 
