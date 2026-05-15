@@ -27,7 +27,6 @@ export const getArrivalDepartureByAirportData = async (data) => {
     ]);
 
     return response;
-    // return [{ data: demo }, { data: demo }];
   } catch (err) {
     console.log(err.message);
   }

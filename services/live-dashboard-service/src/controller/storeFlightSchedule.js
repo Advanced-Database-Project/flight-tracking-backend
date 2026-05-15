@@ -23,7 +23,7 @@ async function storeFlightSchedule(data) {
       estimatedArrival: new Date(data.arrival.estimated).getTime(),
     };
 
-    await redis.hset(`schedule:${callsign}`, schedule);
+    await redis.hSet(`schedule:${callsign}`, schedule);
 
     console.log(`Stored schedule ${callsign}`);
   } catch (err) {

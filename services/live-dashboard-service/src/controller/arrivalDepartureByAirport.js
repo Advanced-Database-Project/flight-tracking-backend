@@ -2,7 +2,7 @@
 
 import { getArrivalDepartureByAirportData } from "./getAirportData.js";
 import { createClient } from "redis";
-import { storeFlightState } from "./storeFlightStates.js";
+// import { storeFlightState } from "./storeFlightStates.js";
 
 // ----------------------------------------
 
@@ -18,7 +18,7 @@ export const getArrivalDepartureByAirport = async (data) => {
   for (const flight of reponse[0]?.data) {
     const key = `arr-${flight?.flight?.icao}`;
 
-    storeFlightState(flight);
+    // storeFlightState(flight);
     await redis.hSet(key, {
       icao24: flight?.flight?.icao24 || "",
       departure: flight?.departure?.scheduled || "",
