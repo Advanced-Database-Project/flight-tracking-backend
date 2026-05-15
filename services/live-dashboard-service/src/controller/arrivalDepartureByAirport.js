@@ -2,6 +2,7 @@
 
 import { getArrivalDepartureByAirportData } from "./getAirportData.js";
 import { createClient } from "redis";
+import { storeFlightState } from "./storeFlightStates.js";
 
 // ----------------------------------------
 
@@ -15,30 +16,24 @@ export const getArrivalDepartureByAirport = async (data) => {
   reponse = await getArrivalDepartureByAirportData(data);
 
   for (const flight of reponse[0]?.data) {
-    const key = `arr-${data.city}-${flight.icao24}`;
+    const key = `arr-${flight?.flight?.icao}`;
 
+    storeFlightState(flight);
     await redis.hSet(key, {
-      icao24: flight.icao24 || "",
-      callsign: flight.callsign || "",
-      departure: flight.estDepartureAirport || "",
-      arrival: flight.estArrivalAirport || "",
-      firstSeen: flight.firstSeen || "",
-      lastSeen: flight.lastSeen || "",
+      icao24: flight?.flight?.icao24 || "",
+      departure: flight?.departure?.scheduled || "",
+      arrival: flight?.arrival?.scheduled || "",
     });
-
     await redis.expire(key, 3600);
   }
 
   for (const flight of reponse[1]?.data) {
-    const key = `dep-${data.city}-${flight.icao24}`;
+    const key = `dep-${flight?.flight?.icao}`;
 
     await redis.hSet(key, {
-      icao24: flight.icao24 || "",
-      callsign: flight.callsign || "",
-      departure: flight.estDepartureAirport || "",
-      arrival: flight.estArrivalAirport || "",
-      firstSeen: flight.firstSeen || "",
-      lastSeen: flight.lastSeen || "",
+      icao24: flight?.flight?.icao24 || "",
+      departure: flight?.departure?.scheduled || "",
+      arrival: flight?.arrival?.scheduled || "",
     });
 
     await redis.expire(key, 3600);
