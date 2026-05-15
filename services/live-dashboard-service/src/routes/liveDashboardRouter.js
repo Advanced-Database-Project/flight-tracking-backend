@@ -39,7 +39,7 @@ export const liveDashboardRouter = (httpServer) => {
         );
       };
 
-      setInterval(() => executeIntervalFunc(data), 20000);
+      setInterval(() => executeIntervalFunc(data), 60000);
       executeIntervalFunc(data);
     });
 
