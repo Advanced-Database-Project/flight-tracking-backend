@@ -33,8 +33,8 @@ export const liveDashboardRouter = (httpServer) => {
         socket.emit(
           env.AIRPORT_LIVE_DASHBOARD_CHANNEL,
           JSON.stringify({
-            arr: response[0]?.data,
-            dep: response[1]?.data,
+            arr: response[0]?.data?.data,
+            dep: response[1]?.data?.data,
           }),
         );
       };

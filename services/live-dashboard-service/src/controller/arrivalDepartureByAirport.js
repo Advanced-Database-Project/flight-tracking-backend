@@ -15,28 +15,30 @@ export const getArrivalDepartureByAirport = async (data) => {
 
   reponse = await getArrivalDepartureByAirportData(data);
 
-  for (const flight of reponse[0]?.data) {
-    const key = `arr-${flight?.flight?.icao}`;
+  if (reponse?.length) {
+    for (const flight of reponse[0]?.data?.data) {
+      const key = `arr-${flight?.flight?.icao}`;
 
-    // storeFlightState(flight);
-    await redis.hSet(key, {
-      icao24: flight?.flight?.icao24 || "",
-      departure: flight?.departure?.scheduled || "",
-      arrival: flight?.arrival?.scheduled || "",
-    });
-    await redis.expire(key, 3600);
-  }
+      // storeFlightState(flight);
+      await redis.hSet(key, {
+        icao24: flight?.flight?.icao24 || "",
+        departure: flight?.departure?.scheduled || "",
+        arrival: flight?.arrival?.scheduled || "",
+      });
+      await redis.expire(key, 3600);
+    }
 
-  for (const flight of reponse[1]?.data) {
-    const key = `dep-${flight?.flight?.icao}`;
+    for (const flight of reponse[1]?.data?.data) {
+      const key = `dep-${flight?.flight?.icao}`;
 
-    await redis.hSet(key, {
-      icao24: flight?.flight?.icao24 || "",
-      departure: flight?.departure?.scheduled || "",
-      arrival: flight?.arrival?.scheduled || "",
-    });
+      await redis.hSet(key, {
+        icao24: flight?.flight?.icao24 || "",
+        departure: flight?.departure?.scheduled || "",
+        arrival: flight?.arrival?.scheduled || "",
+      });
 
-    await redis.expire(key, 3600);
+      await redis.expire(key, 3600);
+    }
   }
 
   return reponse;
